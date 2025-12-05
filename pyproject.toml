@@ -20,15 +20,11 @@ Homepage = "."
 
 [project.scripts]
 pycfpu-render = "pycfpu.scripts.render_pyvista:main"
-pycfpu-read = "pycfpu.scripts.read_test_py:main"
-pycfpu-bench = "pycfpu.scripts.benchmark_compare:main"
-pycfpu-step-bench = "pycfpu.scripts.benchmark_step:main"
 
 [tool.setuptools]
 package-dir = {"pycfpu" = "."}
 packages = [
   "pycfpu",
-  "pycfpu.data",
   "pycfpu.util",
   "pycfpu.scripts"
 ]

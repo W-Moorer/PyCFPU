@@ -3,11 +3,13 @@ from scipy.spatial import cKDTree
 from scipy.linalg import qr, svd, cholesky
 from scipy.optimize import fminbound
 from scipy.sparse import coo_matrix
+from concurrent.futures import ThreadPoolExecutor
+import os
 from .util.curlfree_poly import curlfree_poly
 from .util.weight import weight
 from .util.gcv_cost_function import gcv_cost_function
 
-def cfpurecon(x, nrml, y, gridsize, kernelinfo=None, reginfo=None):
+def cfpurecon(x, nrml, y, gridsize, kernelinfo=None, reginfo=None, n_jobs=None):
     if kernelinfo is None:
         kernelinfo = {
             'phi': lambda r: -r,
@@ -94,14 +96,10 @@ def cfpurecon(x, nrml, y, gridsize, kernelinfo=None, reginfo=None):
     patch_vec = [None] * M
     Psi = [None] * M
     potential_local = [None] * M
-    for k in range(M):
+    def _compute(k):
         idk = idx[k]
         if idk.size == 0:
-            idxe_patch[k] = np.array([], dtype=int)
-            patch_vec[k] = np.array([], dtype=int)
-            Psi[k] = np.array([], dtype=float)
-            potential_local[k] = np.array([], dtype=float)
-            continue
+            return (np.array([], dtype=int), np.array([], dtype=int), np.array([], dtype=float), np.array([], dtype=float))
         h2 = np.max(nn_dist_list[k])**2 if nn_dist_list[k].size else 1.0
         x_local = x[idk, :]
         xx_local = x_local[:, 0]
@@ -239,18 +237,13 @@ def cfpurecon(x, nrml, y, gridsize, kernelinfo=None, reginfo=None):
         temp_idg = temp_idg.reshape(-1)
         temp_idg = temp_idg[idmask] - 1
         De = np.sqrt(De.reshape(-1)[idmask])
-        idxe_patch[k] = temp_idg.astype(int)
-        Psi[k] = weight(De, patchRad[k], 0)
-        mlocalx = len(xxg)
-        mlocaly = len(yyg)
-        mlocalz = len(zzg)
+        idxe_k = temp_idg.astype(int)
+        Psi_k = weight(De, patchRad[k], 0)
         xe_local = np.vstack([XX3.reshape(-1), YY3.reshape(-1), ZZ3.reshape(-1)]).T
         xe_local = xe_local[idmask, :]
         mm = xe_local.shape[0]
         if mm == 0:
-            potential_local[k] = np.array([], dtype=float)
-            patch_vec[k] = np.array([], dtype=int)
-            continue
+            return (idxe_k, np.array([], dtype=int), Psi_k, np.array([], dtype=float))
         batch_sz = int(np.ceil(100**2 / max(n, 1)))
         temp_potential = np.zeros(mm)
         potential_correction = np.zeros(mm)
@@ -267,8 +260,17 @@ def cfpurecon(x, nrml, y, gridsize, kernelinfo=None, reginfo=None):
                 potential_correction[j:j+xe_local_batch.shape[0]] = phi(rb) @ coeffs_correction_vec + coeffs_correction_const
             else:
                 potential_correction[j:j+xe_local_batch.shape[0]] = Pb[:, 0:3] @ coeffs_correction_vec + coeffs_correction_const
-        potential_local[k] = temp_potential - potential_correction
-        patch_vec[k] = np.full(mm, k + 1)
+        potential_k = temp_potential - potential_correction
+        patch_vec_k = np.full(mm, k + 1)
+        return (idxe_k, patch_vec_k, Psi_k, potential_k)
+    workers = n_jobs if (n_jobs and n_jobs > 0) else min(M, os.cpu_count() or 1)
+    if workers > 1:
+        with ThreadPoolExecutor(max_workers=workers) as ex:
+            for k, res in enumerate(ex.map(_compute, range(M))):
+                idxe_patch[k], patch_vec[k], Psi[k], potential_local[k] = res
+    else:
+        for k in range(M):
+            idxe_patch[k], patch_vec[k], Psi[k], potential_local[k] = _compute(k)
     patch_vec_cat = np.concatenate([pv for pv in patch_vec if pv.size > 0]) if any([pv.size > 0 for pv in patch_vec]) else np.array([], dtype=int)
     idxe_vec_cat = np.concatenate([ie for ie in idxe_patch if ie.size > 0]) if any([ie.size > 0 for ie in idxe_patch]) else np.array([], dtype=int)
     Psi_cat = np.concatenate([ps for ps in Psi if ps.size > 0]) if any([ps.size > 0 for ps in Psi]) else np.array([], dtype=float)
