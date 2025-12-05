@@ -1,0 +1,37 @@
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pycfpu"
+version = "0.1.0"
+description = "CFPU surface reconstruction from point clouds"
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [{name = "CFPU Maintainers"}]
+dependencies = [
+  "numpy",
+  "scipy",
+  "pyvista"
+]
+
+[project.urls]
+Homepage = "."
+
+[project.scripts]
+pycfpu-render = "pycfpu.scripts.render_pyvista:main"
+pycfpu-read = "pycfpu.scripts.read_test_py:main"
+pycfpu-bench = "pycfpu.scripts.benchmark_compare:main"
+pycfpu-step-bench = "pycfpu.scripts.benchmark_step:main"
+
+[tool.setuptools]
+package-dir = {"pycfpu" = "."}
+packages = [
+  "pycfpu",
+  "pycfpu.data",
+  "pycfpu.util",
+  "pycfpu.scripts"
+]
+
+[tool.setuptools.package-data]
+pycfpu = ["data/*.txt"]
