@@ -20,7 +20,7 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
   </pre>
 </div>
 
-# pycfpu
+# PyCFPU
 
 面向有向点云（点 + 法向）进行隐式曲面重建的 Python 实现，算法基于 Curl-Free RBF Partition of Unity（CFPU）。本项目将原始 MATLAB 版本迁移为 Python 版本，并提供示例数据与 PyVista 可视化脚本。
 
