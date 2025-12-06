@@ -2,6 +2,8 @@ import numpy as np
 import pyvista as pv
 from pycfpu.cfpurecon import cfpurecon
 import argparse
+import time
+from datetime import datetime
 from pathlib import Path
 import os
 
@@ -48,7 +50,17 @@ def main():
     print(f"threads={used_workers} mode={mode}")
     print(f"bounds_min={bounds_min}")
     print(f"bounds_max={bounds_max}")
+    logs_dir = root / 'logs'
+    logs_dir.mkdir(parents=True, exist_ok=True)
+    t0 = time.perf_counter()
     potential, X, Y, Z = cfpurecon(points, normals, patches, m, kernel, regularization, jobs)
+    t1 = time.perf_counter()
+    log_path = logs_dir / f"render__{args.model or 'default'}__m{m}.log"
+    with open(log_path, 'a', encoding='utf-8') as f:
+        f.write(f"[{datetime.now().isoformat()}] model={args.model or 'default'} m={m} threads={used_workers} mode={mode}\n")
+        f.write(f"points_shape={points.shape} normals_shape={normals.shape} patches_shape={patches.shape}\n")
+        f.write(f"bounds_min={bounds_min.tolist()} bounds_max={bounds_max.tolist()}\n")
+        f.write(f"cfpurecon_time_sec={t1 - t0:.6f}\n")
     print(f"grid_shape={X.shape}")
     sg = pv.StructuredGrid(X, Y, Z)
     sg['potential'] = potential.ravel(order='F')
