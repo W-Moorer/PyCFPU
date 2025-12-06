@@ -119,3 +119,47 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
 
 ## 参考文献
 - [1] K. P. Drake, E. J. Fuselier, and G. B. Wright. Implicit Surface Reconstruction with a Curl-free Radial Basis Function Partition of Unity Method. SIAM J. Sci. Comput. 42, A3018–A3040 (2022). doi:10.1137/20M1386166. 预印本：<https://arxiv.org/abs/2101.05940>
+
+## 模型图集（figs）
+<table>
+  <tr>
+    <td><a href="figs/default_m256.png"><img src="figs/default_m256.png" alt="default" width="300"></a></td>
+    <td><a href="figs/armadillo_m256.png"><img src="figs/armadillo_m256.png" alt="armadillo" width="300"></a></td>
+    <td><a href="figs/bunny_large_m256.png"><img src="figs/bunny_large_m256.png" alt="bunny_large" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/cantius_tooth_m256.png"><img src="figs/cantius_tooth_m256.png" alt="cantius_tooth" width="300"></a></td>
+    <td><a href="figs/dancing_children_m256.png"><img src="figs/dancing_children_m256.png" alt="dancing_children" width="300"></a></td>
+    <td><a href="figs/filigree_m256.png"><img src="figs/filigree_m256.png" alt="filigree" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/frog_m256.png"><img src="figs/frog_m256.png" alt="frog" width="300"></a></td>
+    <td><a href="figs/gargoyle_m256.png"><img src="figs/gargoyle_m256.png" alt="gargoyle" width="300"></a></td>
+    <td><a href="figs/happy_buddha_m256.png"><img src="figs/happy_buddha_m256.png" alt="happy_buddha" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/homer_m256.png"><img src="figs/homer_m256.png" alt="homer" width="300"></a></td>
+    <td><a href="figs/interlocked_tori_m256.png"><img src="figs/interlocked_tori_m256.png" alt="interlocked_tori" width="300"></a></td>
+    <td><a href="figs/mammoth_tooth_m256.png"><img src="figs/mammoth_tooth_m256.png" alt="mammoth_tooth" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/pump_carter_m256.png"><img src="figs/pump_carter_m256.png" alt="pump_carter" width="300"></a></td>
+    <td><a href="figs/raptor_head_m256.png"><img src="figs/raptor_head_m256.png" alt="raptor_head" width="300"></a></td>
+    <td><a href="figs/stanford_bunny_m256.png"><img src="figs/stanford_bunny_m256.png" alt="stanford_bunny" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/stanford_dragon_m256.png"><img src="figs/stanford_dragon_m256.png" alt="stanford_dragon" width="300"></a></td>
+    <td><a href="figs/trefoil_N11616_m256.png"><img src="figs/trefoil_N11616_m256.png" alt="trefoil_N11616" width="300"></a></td>
+    <td><a href="figs/trefoil_N18816_m256.png"><img src="figs/trefoil_N18816_m256.png" alt="trefoil_N18816" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/trefoil_N23064_m256.png"><img src="figs/trefoil_N23064_m256.png" alt="trefoil_N23064" width="300"></a></td>
+    <td><a href="figs/trefoil_N27744_m256.png"><img src="figs/trefoil_N27744_m256.png" alt="trefoil_N27744" width="300"></a></td>
+    <td><a href="figs/trefoil_N32856_m256.png"><img src="figs/trefoil_N32856_m256.png" alt="trefoil_N32856" width="300"></a></td>
+  </tr>
+  <tr>
+    <td><a href="figs/trefoil_N6144_m256.png"><img src="figs/trefoil_N6144_m256.png" alt="trefoil_N6144" width="300"></a></td>
+    <td><a href="figs/trefoil_N8664_m256.png"><img src="figs/trefoil_N8664_m256.png" alt="trefoil_N8664" width="300"></a></td>
+    <td></td>
+  </tr>
+</table>
