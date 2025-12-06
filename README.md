@@ -42,6 +42,7 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
 - 直接运行脚本：
   - `python scripts/render_pyvista.py --m 256`
   - 指定模型：`python scripts/render_pyvista.py --model homer --m 256`
+  - 指定并行：`python scripts/render_pyvista.py --m 256 --jobs 4`；不传或 `--jobs 0` 为自动并行
 
 ## 目录结构
 - `cfpurecon.py`：重建主函数
@@ -98,6 +99,19 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
 ## PyVista 渲染提示
 - 双视图联动：在两个子图中调用 `plotter.link_views()` 以同步交互。
 - 节点叠加：使用 `add_points(..., render_points_as_spheres=True)` 避免 Glyph 的 `orient` 警告。
+
+## 并行与性能
+- 核心重建函数支持并行：`cfpurecon(..., n_jobs=None)`；当 `n_jobs=None` 时自动使用 `min(patches_count, os.cpu_count())`。
+- 渲染脚本参数：`--jobs`，默认 `0` 表示自动；传正整数则使用指定线程数。
+- 若本地 BLAS 已启用多线程，过大的 `--jobs` 可能导致过度调度；建议 2–8 间调试。
+
+## 批量保存截图
+- 批量遍历 `data` 中所有 demo 模型并保存 PNG 到 `figs/`，默认 DPI=600：
+  - `python scripts/save_all_figs.py --m 256 --dpi 600`
+- 指定模型与输出目录、并行与尺寸：
+  - `python scripts/save_all_figs.py --models homer armadillo --m 256 --dpi 600 --out figs --jobs 0 --width_in 6 --height_in 4`
+- 文件命名：`figs/<模型名>_m<m>.png`；默认模型文件名为 `default_m<m>.png`。
+- 运行时输出进度：显示 `[i/N] 模型名 ####------ 进度% -> 文件名`，并在开始提示总模型数与并行模式。
 
 ## 致谢（数据来源）
 - Stanford Bunny、Happy Buddha、Stanford Dragon、Armadillo：<http://graphics.stanford.edu/data/3Dscanrep/>
