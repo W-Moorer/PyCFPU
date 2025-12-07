@@ -104,6 +104,11 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
 - 核心重建函数支持并行：`cfpurecon(..., n_jobs=None)`；当 `n_jobs=None` 时自动使用 `min(patches_count, os.cpu_count())`。
 - 渲染脚本参数：`--jobs`，默认 `0` 表示自动；传正整数则使用指定线程数。
 - 若本地 BLAS 已启用多线程，过大的 `--jobs` 可能导致过度调度；建议 2–8 间调试。
+- 进程并行（共享内存）可选：设置环境变量启用
+  - Windows PowerShell：`$env:CFPU_PARALLEL='process'; $env:CFPU_BLAS_THREADS='1'`
+  - 批量脚本示例：`python scripts/save_all_figs.py --m 256 --jobs 0`
+  - 单模型示例：`python scripts/render_pyvista.py --model homer --m 256 --jobs 0`
+  - 建议并行时将 BLAS 线程限制为 `1`（`CFPU_BLAS_THREADS=1`）以避免线程过度订阅。
 
 ## 批量保存截图
 - 批量遍历 `data` 中所有 demo 模型并保存 PNG 到 `figs/`，默认 DPI=600：
