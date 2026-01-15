@@ -263,7 +263,7 @@ class LocalSolver:
         coeffsx = coeffs[0:3*n:3]
         coeffsy = coeffs[1:3*n:3]
         coeffsz = coeffs[2:3*n:3]
-
+        
         temp_potential_nodes = np.sum(eta_temp * (dx * coeffsx.reshape(1, -1) + 
                                                   dy * coeffsy.reshape(1, -1) + 
                                                   dz * coeffsz.reshape(1, -1)), axis=1) + P @ coeffsp
@@ -276,6 +276,13 @@ class LocalSolver:
             A1[0:n, 0:n] = phi(r)
             A1[-1, -1] = 0.0
             b1 = np.concatenate([temp_potential_nodes, np.array([0.0])])
+
+            # DEBUG: Print b1 stats
+            if not hasattr(LocalSolver, "debug_counter_b1"):
+                 LocalSolver.debug_counter_b1 = 0
+            if LocalSolver.debug_counter_b1 < 3:
+                 print(f"CPU b1 Patch {LocalSolver.debug_counter_b1}: Mean={np.mean(b1[:-1]):.6e}, Max={np.max(b1[:-1]):.6e}, AbsMax={np.max(np.abs(b1[:-1])):.6e}")
+                 LocalSolver.debug_counter_b1 += 1
 
             if potreg != 2:
                 if potreg == 1:
@@ -309,6 +316,15 @@ class LocalSolver:
 
         coeffs_correction_const = coeffs_correction[-1]
         coeffs_correction_vec = coeffs_correction[:-1]
+
+        # DEBUG: Print Coeffs Stats (Moved to end)
+        if not hasattr(LocalSolver, "debug_counter"):
+             LocalSolver.debug_counter = 0
+        if LocalSolver.debug_counter < 3:
+             print(f"CPU Coeffs Patch {LocalSolver.debug_counter}: Sum={np.sum(coeffs):.6e}, AbsSum={np.sum(np.abs(coeffs)):.6e}")
+             if coeffs_correction is not None:
+                 print(f"CPU Corr Coeffs Patch {LocalSolver.debug_counter}: Sum={np.sum(coeffs_correction):.6e}, AbsSum={np.sum(np.abs(coeffs_correction)):.6e}")
+             LocalSolver.debug_counter += 1
 
         # Evaluation on grid points
         ix = int(np.round((y0 - startx) / griddx)) + 1
@@ -654,6 +670,10 @@ class CFPUSolver:
         if idxe_vec_cat.size > 0:
             temp = coo_matrix((potential_local_cat, (idxe_vec_cat, patch_vec_cat - 1)), shape=(m, M)).sum(axis=1).A1
             
+        # DEBUG: Print Stats
+        print(f"CPU Psi_sum: Mean={np.mean(Psi_sum):.6e}, Max={np.max(Psi_sum):.6e}, Sum={np.sum(Psi_sum):.6e}")
+        print(f"CPU Potential Sum (Pre-Div): Mean={np.mean(temp):.6e}, Max={np.max(temp):.6e}, Sum={np.sum(temp):.6e}")
+
         i_nonzero = np.where(Psi_sum > 0)[0]
         potential = np.full(m, np.nan)
         potential[i_nonzero] = temp[i_nonzero]
