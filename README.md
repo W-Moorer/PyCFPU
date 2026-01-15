@@ -22,149 +22,177 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
 
 # PyCFPU
 
-面向有向点云（点 + 法向）进行隐式曲面重建的 Python 实现，算法基于 Curl-Free RBF Partition of Unity（CFPU）。本项目将原始 MATLAB 版本迁移为 Python 版本，并提供示例数据与 PyVista 可视化脚本。
+**PyCFPU** 是面向有向点云（点 + 法向）进行隐式曲面重建的高性能 Python 实现。算法基于 **Curl-Free RBF Partition of Unity (CFPU)** 方法。
 
-## 来源与引用
-- 原始 MATLAB 实现与示例：<https://github.com/gradywright/cfpu>
-- 参考文献：[1] K. P. Drake, E. J. Fuselier, and G. B. Wright. Implicit Surface Reconstruction with a Curl-free Radial Basis Function Partition of Unity Method. SIAM J. Sci. Comput. 42, A3018–A3040 (2022). doi:10.1137/20M1386166. 预印本：<https://arxiv.org/abs/2101.05940>
-- 本仓库的 Python 代码是对上述 MATLAB 版本的移植与工程化封装，核心算法与符号约定与原文一致。
+本项目在原始 MATLAB 版本的基础上进行了完整的 Python 移植与工程化封装，并新增了基于 **CuPy** 的 **GPU 加速版本**，能够显著提升大规模点云重建的效率。
 
-## 功能概述
-- 重建函数：`cfpurecon(points, normals, patches, m, kernel, regularization)`
-- 示例数据：`data/demo_nodes.txt`、`data/demo_normals.txt`、`data/demo_patches.txt` 以及多模型的 `demo_*__模型名.txt`
-- 可视化脚本：双视图联动渲染零等值面与点云（PyVista）
+## 🌟 核心特性
 
-## 安装与运行
-- 依赖：`pip install numpy scipy pyvista`
-- 开发模式安装（可选，用于命令行入口）：
-  - `pip install -e .`
-  - 安装后可使用 `pycfpu-render`（指向 `scripts/render_pyvista.py:main`）
-- 直接运行脚本：
-  - `python scripts/render_pyvista.py --m 256`
-  - 指定模型：`python scripts/render_pyvista.py --model homer --m 256`
-  - 指定并行：`python scripts/render_pyvista.py --m 256 --jobs 4`；不传或 `--jobs 0` 为自动并行
+*   **双引擎支持**：
+    *   **CPU 版本**：基于 NumPy 和 SciPy，稳定可靠，兼容性好。
+    *   **GPU 版本**：基于 CuPy，利用 GPU 强大的并行计算能力，适合处理大规模数据（需安装 CUDA 环境）。
+*   **高精度**：GPU 版本经过深度优化，计算误差控制在 **1e-15** 数量级，与 CPU 版本结果完全一致。
+*   **易用性**：提供统一的 API 接口，CPU/GPU 切换仅需更改导入路径。
+*   **可视化**：内置 PyVista 可视化脚本，支持双视图联动查看重建结果与原始点云。
 
-## 目录结构
-- `cfpurecon.py`：重建主函数
-- `util/`：工具函数（`curlfree_poly.py`、`weight.py`、`gcv_cost_function.py`）
-- `data/`：示例与转换后的点云数据（`demo_nodes.txt` 等及 `demo_*__模型名.txt`）
-- `scripts/render_pyvista.py`：渲染入口（参数解析见 `scripts/render_pyvista.py:7`）
+## 📚 来源与引用
 
-## 快速开始
-- 可视化渲染（默认 demo 数据）：
-  - `python scripts/render_pyvista.py --m 256`
-- 指定模型渲染：
-  - `python scripts/render_pyvista.py --model stanford_dragon --m 256`
-- 直接调用 API：
-  ```python
-  import numpy as np
-  from pycfpu.cfpurecon import cfpurecon
+*   **原始算法**：[1] K. P. Drake, E. J. Fuselier, and G. B. Wright. *Implicit Surface Reconstruction with a Curl-free Radial Basis Function Partition of Unity Method*. SIAM J. Sci. Comput. 42, A3018–A3040 (2022). doi:10.1137/20M1386166. ([arXiv](https://arxiv.org/abs/2101.05940))
+*   **参考实现**：[GitHub - gradywright/cfpu](https://github.com/gradywright/cfpu) (MATLAB)
 
-  points = np.loadtxt('data/demo_nodes.txt')
-  normals = np.loadtxt('data/demo_normals.txt')
-  patches = np.loadtxt('data/demo_patches.txt')
+## 🛠️ 安装与环境
 
-  m = 400
-  kernel = {
-      'phi': lambda r: -r,
-      'eta': lambda r: -r,
-      'zeta': lambda r: -1.0/np.where(r==0, np.inf, r),
-      'order': 1
-  }
-  regularization = {
-      'exactinterp': 1,
-      'nrmlreg': 1,
-      'nrmllambda': 1e-4,
-      'potreg': 0
-  }
-  potential, X, Y, Z = cfpurecon(points, normals, patches, m, kernel, regularization)
-  ```
+### 1. 基础依赖
 
-## 数据说明
-- 直接以文本形式读取：
-  - 默认：`data/demo_nodes.txt`、`data/demo_normals.txt`、`data/demo_patches.txt`
-  - 指定模型：`data/demo_nodes__模型名.txt`、`data/demo_normals__模型名.txt`、`data/demo_patches__模型名.txt`
-- 法向量应为单位向量；如需归一化，使用 `normals /= np.linalg.norm(normals, axis=1, keepdims=True)` 并对零范数做保护。
+项目依赖于 Python 3.8+。
 
-## 参数与调优
-- `m`：背景网格分辨率。数值越大曲面更平滑、细节更清晰，但耗时增加；常用 256–500。
-- `kernel`（多调和样条）：
-  - 一阶：`phi(r)=-r`、`eta(r)=-r`、`zeta(r)=-1/r`、`order=1`（默认）
-  - 二阶：`phi(r)=r^3`、`eta(r)=r^3`、`zeta(r)=3r`、`order=2`
-- `regularization`：
-  - `exactinterp`：势函数插值修正；`1` 启用。
-  - `nrmlreg`/`nrmllambda`：法向拟合正则（岭/GCV/局部）。
-  - `potreg`/`potlambda`：势函数残差的标量 RBF 正则。
+```bash
+pip install numpy scipy pyvista
+```
 
-## PyVista 渲染提示
-- 双视图联动：在两个子图中调用 `plotter.link_views()` 以同步交互。
-- 节点叠加：使用 `add_points(..., render_points_as_spheres=True)` 避免 Glyph 的 `orient` 警告。
+### 2. GPU 支持（可选）
 
-## 并行与性能
-- 核心重建函数支持并行：`cfpurecon(..., n_jobs=None)`；当 `n_jobs=None` 时自动使用 `min(patches_count, os.cpu_count())`。
-- 渲染脚本参数：`--jobs`，默认 `0` 表示自动；传正整数则使用指定线程数。
-- 若本地 BLAS 已启用多线程，过大的 `--jobs` 可能导致过度调度；建议 2–8 间调试。
-- 进程并行（共享内存）可选：设置环境变量启用
-  - Windows PowerShell：`$env:CFPU_PARALLEL='process'; $env:CFPU_BLAS_THREADS='1'`
-  - 批量脚本示例：`python scripts/save_all_figs.py --m 256 --jobs 0`
-  - 单模型示例：`python scripts/render_pyvista.py --model homer --m 256 --jobs 0`
-  - 建议并行时将 BLAS 线程限制为 `1`（`CFPU_BLAS_THREADS=1`）以避免线程过度订阅。
+如需使用 GPU 加速功能，请根据您的 CUDA 版本安装对应的 `cupy` 包（例如 CUDA 12.x）：
 
-## 批量保存截图
-- 批量遍历 `data` 中所有 demo 模型并保存 PNG 到 ` figures/`，默认 DPI=600：
-  - `python scripts/save_all_figs.py --m 256 --dpi 600`
-- 指定模型与输出目录、并行与尺寸：
-  - `python scripts/save_all_figs.py --models homer armadillo --m 256 --dpi 600 --out  figures --jobs 0 --width_in 6 --height_in 4`
-- 文件命名：` figures/<模型名>_m<m>.png`；默认模型文件名为 `default_m<m>.png`。
-- 运行时输出进度：显示 `[i/N] 模型名 ####------ 进度% -> 文件名`，并在开始提示总模型数与并行模式。
+```bash
+pip install cupy-cuda12x
+```
 
-## 致谢（数据来源）
-- Stanford Bunny、Happy Buddha、Stanford Dragon、Armadillo：<http://graphics.stanford.edu/data/3Dscanrep/>
-- Homer、Raptor、Filigree、Pump Carter、Dancing Children、Gargoyle、De Bozbezbozzel：<http://visionair.ge.imati.cnr.it>
+### 3. 安装本项目
 
-## 参考文献
-- [1] K. P. Drake, E. J. Fuselier, and G. B. Wright. Implicit Surface Reconstruction with a Curl-free Radial Basis Function Partition of Unity Method. SIAM J. Sci. Comput. 42, A3018–A3040 (2022). doi:10.1137/20M1386166. 预印本：<https://arxiv.org/abs/2101.05940>
+建议以开发模式安装，以便随时修改代码并生效：
 
-## 模型图集（ figures）
+```bash
+git clone https://github.com/your-repo/PyCFPU.git
+cd PyCFPU
+pip install -e .
+```
+
+## 🚀 快速开始
+
+### 命令行工具
+
+#### 1. 可视化重建 (CPU)
+
+使用默认示例数据（TruncatedRing）进行重建并显示交互式窗口：
+
+```bash
+python scripts/render_pyvista.py --m 256
+```
+
+*   `--model`: 指定模型名称（如 `homer`, `stanford_dragon` 等，见 `data/` 目录）。
+*   `--m`: 网格分辨率，数值越大细节越丰富（建议 256-500）。
+*   `--jobs`: 并行线程数（0 表示自动检测）。
+
+#### 2. GPU 性能测试
+
+运行 GPU 版本的测试脚本，验证精度并对比 CPU/GPU 性能：
+
+```bash
+python scripts/test_gpu.py --m 256 --model TruncatedRing
+```
+
+#### 3. 批量生成结果图
+
+批量渲染所有示例模型并保存图片到 `figures/` 目录：
+
+```bash
+python scripts/save_all_figs.py --m 256 --dpi 300
+```
+
+### Python API 调用
+
+PyCFPU 提供了简洁的 Python API，您可以轻松集成到自己的项目中。
+
+#### CPU 版本
+
+```python
+import numpy as np
+from pycfpu.packages.cfpu import cfpurecon
+
+# 1. 准备数据 (N, 3)
+points = np.loadtxt('data/demo_nodes.txt')
+normals = np.loadtxt('data/demo_normals.txt')
+patches = np.loadtxt('data/demo_patches.txt') # 覆盖中心 (M, 3)
+
+# 2. 配置参数
+m = 256  # 网格分辨率
+kernel = {'order': 1} # 默认使用一阶核函数
+reg = {'exactinterp': 1, 'nrmlreg': 1, 'nrmllambda': 1e-4}
+
+# 3. 执行重建
+# 返回值: potential (3D grid), X, Y, Z (网格坐标)
+potential, X, Y, Z = cfpurecon(points, normals, patches, m, kernel, reg)
+```
+
+#### GPU 版本
+
+接口与 CPU 版本完全一致，只需修改导入路径：
+
+```python
+# 导入 GPU 版本
+from pycfpu.packages.fastcfpu import cfpurecon
+
+# ... 数据准备同上 ...
+
+# 执行重建 (自动在 GPU 上进行)
+potential, X, Y, Z = cfpurecon(points, normals, patches, m, kernel, reg)
+```
+
+## 📂 目录结构
+
+```text
+PyCFPU/
+├── data/                   # 示例点云数据 (txt, vtp)
+├── figures/                # 渲染结果截图
+├── packages/               # 核心代码包
+│   ├── cfpu.py             # CPU 实现 (NumPy/SciPy)
+│   └── fastcfpu.py         # GPU 实现 (CuPy)
+├── scripts/                # 实用脚本
+│   ├── render_pyvista.py   # 可视化渲染入口
+│   ├── test_gpu.py         # GPU 测试与基准对比
+│   └── save_all_figs.py    # 批量绘图
+├── tools/                  # 数据预处理工具
+├── LICENSE
+└── README.md
+```
+
+## ⚙️ 参数说明
+
+`cfpurecon` 函数的主要参数：
+
+| 参数 | 类型 | 说明 |
+| :--- | :--- | :--- |
+| `points` | `ndarray` | 输入点云坐标 (N, 3) |
+| `normals` | `ndarray` | 输入点云法向 (N, 3)，应为单位向量 |
+| `patches` | `ndarray` | 局部覆盖Patch的中心点坐标 (M, 3) |
+| `gridsize` | `int/tuple` | 重建网格的分辨率 (如 256) |
+| `kernelinfo` | `dict` | 核函数配置，默认 `{'order': 1}` (一阶多调和样条) |
+| `reginfo` | `dict` | 正则化配置，包含 `exactinterp` (插值/拟合切换), `nrmllambda` (平滑度) 等 |
+| `n_jobs` | `int` | (仅CPU) 并行线程数，None 或 0 为自动 |
+
+## 📊 性能与兼容性
+
+*   **精度**：GPU 版本采用了双精度 (`float64`) 计算，并通过自定义 CUDA Kernel 实现了与 CPU 版本 NumPy 逻辑的精确对齐，确保结果高度一致。
+*   **内存**：GPU 版本显存占用与网格分辨率 (`m`) 的三次方成正比。对于超大分辨率（如 `m > 512`），请确保显存充足。
+*   **兼容性**：代码已在 Windows 10/11 + CUDA 12.x 环境下测试通过。
+
+## 🖼️ 结果展示
+
 <table>
   <tr>
-    <td><a href=" figures/default_m256.png"><img src=" figures/default_m256.png" alt="default" width="300"></a></td>
-    <td><a href=" figures/armadillo_m256.png"><img src=" figures/armadillo_m256.png" alt="armadillo" width="300"></a></td>
-    <td><a href=" figures/bunny_large_m256.png"><img src=" figures/bunny_large_m256.png" alt="bunny_large" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/cantius_tooth_m256.png"><img src=" figures/cantius_tooth_m256.png" alt="cantius_tooth" width="300"></a></td>
-    <td><a href=" figures/dancing_children_m256.png"><img src=" figures/dancing_children_m256.png" alt="dancing_children" width="300"></a></td>
-    <td><a href=" figures/filigree_m256.png"><img src=" figures/filigree_m256.png" alt="filigree" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/frog_m256.png"><img src=" figures/frog_m256.png" alt="frog" width="300"></a></td>
-    <td><a href=" figures/gargoyle_m256.png"><img src=" figures/gargoyle_m256.png" alt="gargoyle" width="300"></a></td>
-    <td><a href=" figures/happy_buddha_m256.png"><img src=" figures/happy_buddha_m256.png" alt="happy_buddha" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/homer_m256.png"><img src=" figures/homer_m256.png" alt="homer" width="300"></a></td>
-    <td><a href=" figures/interlocked_tori_m256.png"><img src=" figures/interlocked_tori_m256.png" alt="interlocked_tori" width="300"></a></td>
-    <td><a href=" figures/mammoth_tooth_m256.png"><img src=" figures/mammoth_tooth_m256.png" alt="mammoth_tooth" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/pump_carter_m256.png"><img src=" figures/pump_carter_m256.png" alt="pump_carter" width="300"></a></td>
-    <td><a href=" figures/raptor_head_m256.png"><img src=" figures/raptor_head_m256.png" alt="raptor_head" width="300"></a></td>
-    <td><a href=" figures/stanford_bunny_m256.png"><img src=" figures/stanford_bunny_m256.png" alt="stanford_bunny" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/stanford_dragon_m256.png"><img src=" figures/stanford_dragon_m256.png" alt="stanford_dragon" width="300"></a></td>
-    <td><a href=" figures/trefoil_N11616_m256.png"><img src=" figures/trefoil_N11616_m256.png" alt="trefoil_N11616" width="300"></a></td>
-    <td><a href=" figures/trefoil_N18816_m256.png"><img src=" figures/trefoil_N18816_m256.png" alt="trefoil_N18816" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/trefoil_N23064_m256.png"><img src=" figures/trefoil_N23064_m256.png" alt="trefoil_N23064" width="300"></a></td>
-    <td><a href=" figures/trefoil_N27744_m256.png"><img src=" figures/trefoil_N27744_m256.png" alt="trefoil_N27744" width="300"></a></td>
-    <td><a href=" figures/trefoil_N32856_m256.png"><img src=" figures/trefoil_N32856_m256.png" alt="trefoil_N32856" width="300"></a></td>
-  </tr>
-  <tr>
-    <td><a href=" figures/trefoil_N6144_m256.png"><img src=" figures/trefoil_N6144_m256.png" alt="trefoil_N6144" width="300"></a></td>
-    <td><a href=" figures/trefoil_N8664_m256.png"><img src=" figures/trefoil_N8664_m256.png" alt="trefoil_N8664" width="300"></a></td>
-    <td></td>
+    <td><a href="figures/default_m256.png"><img src="figures/default_m256.png" alt="default" width="300"></a></td>
+    <td><a href="figures/stanford_bunny_m256.png"><img src="figures/stanford_bunny_m256.png" alt="stanford_bunny" width="300"></a></td>
+    <td><a href="figures/stanford_dragon_m256.png"><img src="figures/stanford_dragon_m256.png" alt="stanford_dragon" width="300"></a></td>
   </tr>
 </table>
+
+更多结果请查看 `figures/` 目录。
+
+## 🤝 贡献
+
+欢迎提交 Issue 或 Pull Request 来改进代码或增加新功能。
+
+## 📄 许可证
+
+本项目遵循 MIT 许可证。详见 [LICENSE](LICENSE) 文件。
