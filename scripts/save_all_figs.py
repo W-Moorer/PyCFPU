@@ -1,6 +1,7 @@
 import numpy as np
 import pyvista as pv
-from pycfpu.cfpurecon import cfpurecon
+# Modified by Refactoring Tool: Updated import path from 'pycfpu.cfpurecon' to 'pycfpu.cfpu'
+from pycfpu.cfpu import cfpurecon
 from pathlib import Path
 import argparse
 import os

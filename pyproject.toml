@@ -25,7 +25,6 @@ pycfpu-render = "pycfpu.scripts.render_pyvista:main"
 package-dir = {"pycfpu" = "."}
 packages = [
   "pycfpu",
-  "pycfpu.util",
   "pycfpu.scripts"
 ]
 
