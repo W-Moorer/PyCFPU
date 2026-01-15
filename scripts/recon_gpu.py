@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 # Modified by Refactoring Tool: Updated import path from 'pycfpu.cfpurecon' to 'pycfpu.cfpu'
-from pycfpu.packages.cfpu import cfpurecon
+from pycfpu.packages.fastcfpu import cfpurecon
 import time
 from datetime import datetime
 from pathlib import Path

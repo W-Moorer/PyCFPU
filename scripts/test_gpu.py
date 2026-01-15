@@ -68,7 +68,7 @@ def compare_results(res_cpu, res_gpu):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--model', type=str, default='TruncatedRing')
+    parser.add_argument('--model', type=str, default='Cylinder')
     parser.add_argument('--m', type=int, default=64) # Smaller grid for quick test
     parser.add_argument('--scale', type=int, default=1)
     args = parser.parse_args()
