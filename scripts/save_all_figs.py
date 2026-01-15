@@ -1,7 +1,7 @@
 import numpy as np
 import pyvista as pv
 # Modified by Refactoring Tool: Updated import path from 'pycfpu.cfpurecon' to 'pycfpu.cfpu'
-from pycfpu.cfpu import cfpurecon
+from pycfpu.packages.cfpu import cfpurecon
 from pathlib import Path
 import argparse
 import os
@@ -39,7 +39,7 @@ def main():
     args = ap.parse_args()
     root = Path(__file__).resolve().parents[1]
     data_dir = root / 'data'
-    out_dir = Path(args.out) if args.out else root / 'figs'
+    out_dir = Path(args.out) if args.out else root / ' figures'
     out_dir.mkdir(parents=True, exist_ok=True)
     logs_dir = root / 'logs'
     logs_dir.mkdir(parents=True, exist_ok=True)

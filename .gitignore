@@ -209,3 +209,4 @@ __marimo__/
 
 # Batch demo results
 batch/
+logs/

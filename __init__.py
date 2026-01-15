@@ -1,1 +1,1 @@
-from .cfpu import cfpurecon, CFPUSolver
+from .packages.cfpu import cfpurecon, CFPUSolver

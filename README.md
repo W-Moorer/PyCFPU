@@ -111,11 +111,11 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
   - 建议并行时将 BLAS 线程限制为 `1`（`CFPU_BLAS_THREADS=1`）以避免线程过度订阅。
 
 ## 批量保存截图
-- 批量遍历 `data` 中所有 demo 模型并保存 PNG 到 `figs/`，默认 DPI=600：
+- 批量遍历 `data` 中所有 demo 模型并保存 PNG 到 ` figures/`，默认 DPI=600：
   - `python scripts/save_all_figs.py --m 256 --dpi 600`
 - 指定模型与输出目录、并行与尺寸：
-  - `python scripts/save_all_figs.py --models homer armadillo --m 256 --dpi 600 --out figs --jobs 0 --width_in 6 --height_in 4`
-- 文件命名：`figs/<模型名>_m<m>.png`；默认模型文件名为 `default_m<m>.png`。
+  - `python scripts/save_all_figs.py --models homer armadillo --m 256 --dpi 600 --out  figures --jobs 0 --width_in 6 --height_in 4`
+- 文件命名：` figures/<模型名>_m<m>.png`；默认模型文件名为 `default_m<m>.png`。
 - 运行时输出进度：显示 `[i/N] 模型名 ####------ 进度% -> 文件名`，并在开始提示总模型数与并行模式。
 
 ## 致谢（数据来源）
@@ -125,46 +125,46 @@ $$ |      \$$$$$$$ |\$$$$$$  |$$ |      $$ |      \$$$$$$  |
 ## 参考文献
 - [1] K. P. Drake, E. J. Fuselier, and G. B. Wright. Implicit Surface Reconstruction with a Curl-free Radial Basis Function Partition of Unity Method. SIAM J. Sci. Comput. 42, A3018–A3040 (2022). doi:10.1137/20M1386166. 预印本：<https://arxiv.org/abs/2101.05940>
 
-## 模型图集（figs）
+## 模型图集（ figures）
 <table>
   <tr>
-    <td><a href="figs/default_m256.png"><img src="figs/default_m256.png" alt="default" width="300"></a></td>
-    <td><a href="figs/armadillo_m256.png"><img src="figs/armadillo_m256.png" alt="armadillo" width="300"></a></td>
-    <td><a href="figs/bunny_large_m256.png"><img src="figs/bunny_large_m256.png" alt="bunny_large" width="300"></a></td>
+    <td><a href=" figures/default_m256.png"><img src=" figures/default_m256.png" alt="default" width="300"></a></td>
+    <td><a href=" figures/armadillo_m256.png"><img src=" figures/armadillo_m256.png" alt="armadillo" width="300"></a></td>
+    <td><a href=" figures/bunny_large_m256.png"><img src=" figures/bunny_large_m256.png" alt="bunny_large" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/cantius_tooth_m256.png"><img src="figs/cantius_tooth_m256.png" alt="cantius_tooth" width="300"></a></td>
-    <td><a href="figs/dancing_children_m256.png"><img src="figs/dancing_children_m256.png" alt="dancing_children" width="300"></a></td>
-    <td><a href="figs/filigree_m256.png"><img src="figs/filigree_m256.png" alt="filigree" width="300"></a></td>
+    <td><a href=" figures/cantius_tooth_m256.png"><img src=" figures/cantius_tooth_m256.png" alt="cantius_tooth" width="300"></a></td>
+    <td><a href=" figures/dancing_children_m256.png"><img src=" figures/dancing_children_m256.png" alt="dancing_children" width="300"></a></td>
+    <td><a href=" figures/filigree_m256.png"><img src=" figures/filigree_m256.png" alt="filigree" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/frog_m256.png"><img src="figs/frog_m256.png" alt="frog" width="300"></a></td>
-    <td><a href="figs/gargoyle_m256.png"><img src="figs/gargoyle_m256.png" alt="gargoyle" width="300"></a></td>
-    <td><a href="figs/happy_buddha_m256.png"><img src="figs/happy_buddha_m256.png" alt="happy_buddha" width="300"></a></td>
+    <td><a href=" figures/frog_m256.png"><img src=" figures/frog_m256.png" alt="frog" width="300"></a></td>
+    <td><a href=" figures/gargoyle_m256.png"><img src=" figures/gargoyle_m256.png" alt="gargoyle" width="300"></a></td>
+    <td><a href=" figures/happy_buddha_m256.png"><img src=" figures/happy_buddha_m256.png" alt="happy_buddha" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/homer_m256.png"><img src="figs/homer_m256.png" alt="homer" width="300"></a></td>
-    <td><a href="figs/interlocked_tori_m256.png"><img src="figs/interlocked_tori_m256.png" alt="interlocked_tori" width="300"></a></td>
-    <td><a href="figs/mammoth_tooth_m256.png"><img src="figs/mammoth_tooth_m256.png" alt="mammoth_tooth" width="300"></a></td>
+    <td><a href=" figures/homer_m256.png"><img src=" figures/homer_m256.png" alt="homer" width="300"></a></td>
+    <td><a href=" figures/interlocked_tori_m256.png"><img src=" figures/interlocked_tori_m256.png" alt="interlocked_tori" width="300"></a></td>
+    <td><a href=" figures/mammoth_tooth_m256.png"><img src=" figures/mammoth_tooth_m256.png" alt="mammoth_tooth" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/pump_carter_m256.png"><img src="figs/pump_carter_m256.png" alt="pump_carter" width="300"></a></td>
-    <td><a href="figs/raptor_head_m256.png"><img src="figs/raptor_head_m256.png" alt="raptor_head" width="300"></a></td>
-    <td><a href="figs/stanford_bunny_m256.png"><img src="figs/stanford_bunny_m256.png" alt="stanford_bunny" width="300"></a></td>
+    <td><a href=" figures/pump_carter_m256.png"><img src=" figures/pump_carter_m256.png" alt="pump_carter" width="300"></a></td>
+    <td><a href=" figures/raptor_head_m256.png"><img src=" figures/raptor_head_m256.png" alt="raptor_head" width="300"></a></td>
+    <td><a href=" figures/stanford_bunny_m256.png"><img src=" figures/stanford_bunny_m256.png" alt="stanford_bunny" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/stanford_dragon_m256.png"><img src="figs/stanford_dragon_m256.png" alt="stanford_dragon" width="300"></a></td>
-    <td><a href="figs/trefoil_N11616_m256.png"><img src="figs/trefoil_N11616_m256.png" alt="trefoil_N11616" width="300"></a></td>
-    <td><a href="figs/trefoil_N18816_m256.png"><img src="figs/trefoil_N18816_m256.png" alt="trefoil_N18816" width="300"></a></td>
+    <td><a href=" figures/stanford_dragon_m256.png"><img src=" figures/stanford_dragon_m256.png" alt="stanford_dragon" width="300"></a></td>
+    <td><a href=" figures/trefoil_N11616_m256.png"><img src=" figures/trefoil_N11616_m256.png" alt="trefoil_N11616" width="300"></a></td>
+    <td><a href=" figures/trefoil_N18816_m256.png"><img src=" figures/trefoil_N18816_m256.png" alt="trefoil_N18816" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/trefoil_N23064_m256.png"><img src="figs/trefoil_N23064_m256.png" alt="trefoil_N23064" width="300"></a></td>
-    <td><a href="figs/trefoil_N27744_m256.png"><img src="figs/trefoil_N27744_m256.png" alt="trefoil_N27744" width="300"></a></td>
-    <td><a href="figs/trefoil_N32856_m256.png"><img src="figs/trefoil_N32856_m256.png" alt="trefoil_N32856" width="300"></a></td>
+    <td><a href=" figures/trefoil_N23064_m256.png"><img src=" figures/trefoil_N23064_m256.png" alt="trefoil_N23064" width="300"></a></td>
+    <td><a href=" figures/trefoil_N27744_m256.png"><img src=" figures/trefoil_N27744_m256.png" alt="trefoil_N27744" width="300"></a></td>
+    <td><a href=" figures/trefoil_N32856_m256.png"><img src=" figures/trefoil_N32856_m256.png" alt="trefoil_N32856" width="300"></a></td>
   </tr>
   <tr>
-    <td><a href="figs/trefoil_N6144_m256.png"><img src="figs/trefoil_N6144_m256.png" alt="trefoil_N6144" width="300"></a></td>
-    <td><a href="figs/trefoil_N8664_m256.png"><img src="figs/trefoil_N8664_m256.png" alt="trefoil_N8664" width="300"></a></td>
+    <td><a href=" figures/trefoil_N6144_m256.png"><img src=" figures/trefoil_N6144_m256.png" alt="trefoil_N6144" width="300"></a></td>
+    <td><a href=" figures/trefoil_N8664_m256.png"><img src=" figures/trefoil_N8664_m256.png" alt="trefoil_N8664" width="300"></a></td>
     <td></td>
   </tr>
 </table>
