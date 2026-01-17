@@ -390,11 +390,13 @@ class CFPUSolver:
         maxx = np.max(self.x_norm_cpu, axis=0)
         griddx = np.max((maxx - minx) / gridsize)
         
-        startx, starty, startz = minx - 3*griddx
+        pad_vox = max(12, int(np.ceil(patchRad0 / griddx)) + 2)
         
-        xx = np.arange(startx, maxx[0] + 3*griddx + griddx/2, griddx)
-        yy = np.arange(starty, maxx[1] + 3*griddx + griddx/2, griddx)
-        zz = np.arange(startz, maxx[2] + 3*griddx + griddx/2, griddx)
+        startx, starty, startz = minx - pad_vox*griddx
+        
+        xx = np.arange(startx, maxx[0] + pad_vox*griddx + griddx/2, griddx)
+        yy = np.arange(starty, maxx[1] + pad_vox*griddx + griddx/2, griddx)
+        zz = np.arange(startz, maxx[2] + pad_vox*griddx + griddx/2, griddx)
         mmx, mmy, mmz = len(xx), len(yy), len(zz)
         m = mmx * mmy * mmz
         

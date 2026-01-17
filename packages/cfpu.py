@@ -541,12 +541,14 @@ class CFPUSolver:
         maxx = np.max(self.x_norm, axis=0)
         griddx = np.max((maxx - minx) / gridsize)
         
-        startx = minx[0] - 3 * griddx
-        endx = maxx[0] + 3 * griddx
-        starty = minx[1] - 3 * griddx
-        endy = maxx[1] + 3 * griddx
-        startz = minx[2] - 3 * griddx
-        endz = maxx[2] + 3 * griddx
+        pad_vox = max(12, int(np.ceil(np.max(patchRad) / griddx)) + 2)
+
+        startx = minx[0] - pad_vox * griddx
+        endx = maxx[0] + pad_vox * griddx
+        starty = minx[1] - pad_vox * griddx
+        endy = maxx[1] + pad_vox * griddx
+        startz = minx[2] - pad_vox * griddx
+        endz = maxx[2] + pad_vox * griddx
         
         xx = np.arange(startx, endx + griddx/2, griddx)
         yy = np.arange(starty, endy + griddx/2, griddx)
